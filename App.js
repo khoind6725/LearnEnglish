@@ -7,6 +7,9 @@
 import React, { Component } from 'react';
 import { YellowBox } from 'react-native';
 import { createStackNavigator } from 'react-navigation';
+import { Provider } from 'react-redux';
+import { createStore } from 'redux';
+import rootReducer from './src/reducers/index';
 import HomeScreen from './src/screens/HomeScreen';
 import LessonDetailScreen from './src/screens/LessonDetailScreen';
 
@@ -20,15 +23,19 @@ const RootStack = createStackNavigator(
 		LessonDetail: LessonDetailScreen,
 	},
 	{
-		initialRouteName: 'Home',
+		initialRouteName: 'Home'
 	}
 );
+
+const store = createStore(rootReducer);
 
 export default class App extends Component {
 
 	render() {
 		return (
-			<RootStack />
+			<Provider store={store}>
+				<RootStack />
+			</Provider>
 		);
 	}
 }

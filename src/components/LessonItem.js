@@ -1,14 +1,17 @@
 import React, { Component } from 'react';
 import { Dimensions, StyleSheet, Image } from 'react-native';
 import { Col, Text, View, Icon } from 'native-base';
+import { withNavigation } from 'react-navigation';
 
-export default class LessonItem extends Component {
+class LessonItem extends Component {
     render() {
-        let { name, thumbnail, theme } = this.props;
+        let { name, thumbnail, theme, navigation } = this.props;
         return (
             <Col
                 style={styles.col}
-                onPress={() => this.props.goToLessonDetailScreen()}
+                onPress={() => {
+                    navigation.navigate('LessonDetail', { lessonName: name })
+                }}
             >
                 <View style={styles.thumbnail}>
                     <Image
@@ -71,3 +74,5 @@ const styles = StyleSheet.create({
         lineHeight: 50
     }
 });
+
+export default withNavigation(LessonItem);

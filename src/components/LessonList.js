@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { StyleSheet } from 'react-native';
-import { Row, Grid, Button, Text } from 'native-base';
+import { Row, Grid } from 'native-base';
 import Divider from './Divider';
 import LessonItem from './LessonItem';
 
@@ -18,14 +18,12 @@ export default class LessonList extends Component {
                             name={lesson.name}
                             thumbnail={lesson.thumbnail}
                             theme={lesson.theme}
-                            goToLessonDetailScreen={() => this.props.goToLessonDetailScreen()}
                         />
                         <Divider />
                         <LessonItem
                             name={lessonList[index + 1] && lessonList[index + 1].name}
                             thumbnail={lessonList[index + 1] && lessonList[index + 1].thumbnail}
                             theme={lessonList[index + 1].theme}
-                            goToLessonDetailScreen={this.props.goToLessonDetailScreen}
                         />
                     </Row>
                 )

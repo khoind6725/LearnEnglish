@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { View } from 'react-native';
 import RNFS from 'react-native-fs';
-import { Content, Button, Text } from 'native-base';
+import { Content } from 'native-base';
 import Spinner from 'react-native-loading-spinner-overlay';
 import LessonList from './../components/LessonList';
 
 export default class HomeScreen extends Component {
-    
+
     static navigationOptions = {
         header: null
     }
@@ -37,7 +37,6 @@ export default class HomeScreen extends Component {
             <Content >
                 <LessonList
                     lessonList={lessonList}
-                    goToLessonDetailScreen={() => this.props.navigation.navigate('LessonDetail')}
                 />
             </Content>
         );
