@@ -49,7 +49,7 @@ export default class HomeScreen extends Component {
                 // Get all lesson Name
                 this.setState({
                     lessonList: JSON.parse(data),
-                    isLoading: !this.state.isLoading
+                    isLoading: false
                 })
             })
     }

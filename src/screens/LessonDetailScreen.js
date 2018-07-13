@@ -1,20 +1,9 @@
 import React, { Component } from 'react';
-import { Image } from 'react-native';
-import { Card, CardItem, Thumbnail, Text, Left, Body, Icon } from 'native-base';
+import { StyleSheet, Image } from 'react-native';
+import { Card, CardItem, Text, View } from 'native-base';
+import Spinner from 'react-native-loading-spinner-overlay';
 import Swiper from 'react-native-swiper';
-
-const cards = [
-    {
-        text: 'Card One',
-        name: 'One',
-        image: 'asset:/lessons/bathroom/images/bathtub.jpg'
-    },
-    {
-        text: 'Card Two',
-        name: 'Two',
-        image: 'asset:/lessons/containers/images/thumbnail.png'
-    },
-];
+import RNFS from 'react-native-fs';
 
 export default class LessonDetailScreen extends Component {
 
@@ -25,41 +14,100 @@ export default class LessonDetailScreen extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            content : []
+            isLoading: true,
+            lessonName: '',
+            content: []
         }
     }
 
     componentDidMount() {
-        
+        let lessonName = this.props.navigation.getParam('lessonName');
+        if (lessonName) {
+            // Get content of lesson
+            RNFS.readFileAssets(`lessons/${lessonName}/lesson.json`)
+                .then(data => {
+                    // Get all lesson Name
+                    this.setState({
+                        isLoading: false,
+                        lessonName: lessonName,
+                        content: JSON.parse(data)
+                    })
+                })
+        }
+    }
+
+    capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    genItemOfLesson = (itemList) => {
+        let result = null;
+        if (itemList.length > 0) {
+            let lessonName = this.props.navigation.getParam('lessonName');
+            result = itemList.map((item, index) => {
+                return (
+                    <Card style={styles.card_container} key={index}>
+                        <CardItem style={styles.card_image} cardBody>
+                            <Image style={styles.image} source={{ uri: `asset:/lessons/${lessonName}/${item.image}` }} />
+                        </CardItem>
+                        <View style={styles.card_content}>
+                            <Text style={styles.item_name}>{this.capitalizeFirstLetter(item.word)}</Text>
+                        </View>
+                    </Card>
+                )
+            })
+        }
+        return result;
     }
 
     render() {
-        let renderItem = cards.map(item => {
+        let { isLoading, content } = this.state;
+        if (isLoading) {
             return (
-                <Card style={{ flex: 1 }}>
-                    <CardItem>
-                        <Left>
-                            <Thumbnail source={{ uri: item.image }} />
-                            <Body>
-                                <Text>{item.text}</Text>
-                                <Text note>NativeBase</Text>
-                            </Body>
-                        </Left>
-                    </CardItem>
-                    <CardItem cardBody>
-                        <Image style={{ height: 200, flex: 1 }} source={{ uri: item.image }} />
-                    </CardItem>
-                    <CardItem>
-                        <Icon name="heart" style={{ color: '#ED4A6A' }} />
-                        <Text>{item.name}</Text>
-                    </CardItem>
-                </Card>
-            )
-        })
+                <View style={{ flex: 1 }}>
+                    <Spinner
+                        visible={isLoading}
+                        textContent={"Loading..."}
+                        textStyle={{ color: '#FFF' }}
+                        animation="fade"
+                    />
+                </View>
+            );
+        }
         return (
-            <Swiper showsPagination={false}>
-                {renderItem}
+            <Swiper
+                paginationStyle={{ bottom: 10 }}
+                showsButtons={true}
+            >
+                {this.genItemOfLesson(content.words)}
             </Swiper>
         );
     }
 }
+
+const styles = StyleSheet.create({
+    card_container: {
+        borderRadius: 20,
+        flex: 1,
+        backgroundColor: '#e1f5fe',
+    },
+    card_image: {
+        flex: 3,
+        backgroundColor: '#e1f5fe',
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    card_content: {
+        flex: 2,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    image: {
+        height: '100%',
+        width: '100%',
+        borderRadius: 20,
+    },
+    item_name: {
+        fontSize: 35
+    }
+})
