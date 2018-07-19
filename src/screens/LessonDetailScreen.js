@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { StyleSheet, Image } from 'react-native';
-import { Card, CardItem, Text, View } from 'native-base';
+import { Alert } from 'react-native';
+import { View } from 'native-base';
 import Spinner from 'react-native-loading-spinner-overlay';
 import Swiper from 'react-native-swiper';
 import RNFS from 'react-native-fs';
+import Sound from 'react-native-sound';
+import WordItem from './../components/WordItem';
 
 export default class LessonDetailScreen extends Component {
 
@@ -36,28 +38,31 @@ export default class LessonDetailScreen extends Component {
         }
     }
 
-    capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
-
     genItemOfLesson = (itemList) => {
         let result = null;
         if (itemList.length > 0) {
             let lessonName = this.props.navigation.getParam('lessonName');
             result = itemList.map((item, index) => {
                 return (
-                    <Card style={styles.card_container} key={index}>
-                        <CardItem style={styles.card_image} cardBody>
-                            <Image style={styles.image} source={{ uri: `asset:/lessons/${lessonName}/${item.image}` }} />
-                        </CardItem>
-                        <View style={styles.card_content}>
-                            <Text style={styles.item_name}>{this.capitalizeFirstLetter(item.word)}</Text>
-                        </View>
-                    </Card>
+                    <WordItem
+                        lessonName={lessonName}
+                        data={item}
+                        key={index}
+                    />
                 )
             })
         }
         return result;
+    }
+
+    playSound = (index = 0) => {
+        let { lessonName, content } = this.state;
+        let { words } = content;
+        let urlSound = `asset:/lessons/${lessonName}/${words[index].sound}`;
+        console.log(urlSound)
+        let sound = new Sound(urlSound, Sound.MAIN_BUNDLE, (error) => {
+            if (!error) sound.play(); // have to put the call to play() in the onload callback
+        });
     }
 
     render() {
@@ -74,40 +79,31 @@ export default class LessonDetailScreen extends Component {
                 </View>
             );
         }
+        this.playSound();
         return (
             <Swiper
                 paginationStyle={{ bottom: 10 }}
                 showsButtons={true}
+                loop={false}
+                onIndexChanged={index => {
+                    this.playSound(index);
+                    // if (index == content.words.length - 1) {
+                    //     setTimeout(() => {
+                    //         Alert.alert(
+                    //             'Kết thúc bài học',
+                    //             'Bạn có muốn kết thúc bài học để làm bài kiểm tra',
+                    //             [
+                    //                 { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
+                    //                 { text: 'OK', onPress: () => console.log('OK Pressed') },
+                    //             ]
+                    //         )
+                    //     }, 7000)
+                    // }
+                }}
             >
                 {this.genItemOfLesson(content.words)}
+                
             </Swiper>
         );
     }
 }
-
-const styles = StyleSheet.create({
-    card_container: {
-        borderRadius: 20,
-        flex: 1,
-        backgroundColor: '#e1f5fe',
-    },
-    card_image: {
-        flex: 3,
-        backgroundColor: '#e1f5fe',
-        borderTopLeftRadius: 20,
-        borderTopRightRadius: 20,
-    },
-    card_content: {
-        flex: 2,
-        justifyContent: 'center',
-        alignItems: 'center'
-    },
-    image: {
-        height: '100%',
-        width: '100%',
-        borderRadius: 20,
-    },
-    item_name: {
-        fontSize: 35
-    }
-})
