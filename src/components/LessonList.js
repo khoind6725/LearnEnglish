@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { StyleSheet } from 'react-native';
 import { Row, Grid } from 'native-base';
 import Divider from './Divider';
 import LessonItem from './LessonItem';
+import { styles } from './../styles/lessonList';
 
 export default class LessonList extends Component {
     render() {
@@ -10,7 +10,7 @@ export default class LessonList extends Component {
         let genLessonItem = lessonList.map((lesson, index) => {
             if (index % 2 == 0) {
                 return (
-                    <Row 
+                    <Row
                         key={index}
                         style={(index + 2 >= lessonList.length) ? { marginBottom: 0 } : { marginBottom: 5 }}
                     >
@@ -39,11 +39,4 @@ export default class LessonList extends Component {
     }
 }
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 5,
-    }
-});
+

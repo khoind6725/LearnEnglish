@@ -12,6 +12,7 @@ import { createStore } from 'redux';
 import rootReducer from './src/reducers/index';
 import HomeScreen from './src/screens/HomeScreen';
 import LessonDetailScreen from './src/screens/LessonDetailScreen';
+import QuizLessonScreen from './src/screens/QuizLessonScreen';
 
 // inorge warning
 YellowBox.ignoreWarnings(['Warning: ...']);
@@ -21,6 +22,7 @@ const RootStack = createStackNavigator(
 	{
 		Home: HomeScreen,
 		LessonDetail: LessonDetailScreen,
+		QuizLesson: QuizLessonScreen,
 	},
 	{
 		initialRouteName: 'Home'

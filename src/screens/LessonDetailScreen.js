@@ -41,7 +41,7 @@ export default class LessonDetailScreen extends Component {
     genItemOfLesson = (itemList) => {
         let result = null;
         if (itemList.length > 0) {
-            let lessonName = this.props.navigation.getParam('lessonName');
+            let { lessonName } = this.state;
             result = itemList.map((item, index) => {
                 return (
                     <WordItem
@@ -59,14 +59,13 @@ export default class LessonDetailScreen extends Component {
         let { lessonName, content } = this.state;
         let { words } = content;
         let urlSound = `asset:/lessons/${lessonName}/${words[index].sound}`;
-        console.log(urlSound)
         let sound = new Sound(urlSound, Sound.MAIN_BUNDLE, (error) => {
             if (!error) sound.play(); // have to put the call to play() in the onload callback
         });
     }
 
     render() {
-        let { isLoading, content } = this.state;
+        let { isLoading, content, lessonName } = this.state;
         if (isLoading) {
             return (
                 <View style={{ flex: 1 }}>
@@ -85,24 +84,24 @@ export default class LessonDetailScreen extends Component {
                 paginationStyle={{ bottom: 10 }}
                 showsButtons={true}
                 loop={false}
+                index={10}
                 onIndexChanged={index => {
                     this.playSound(index);
-                    // if (index == content.words.length - 1) {
-                    //     setTimeout(() => {
-                    //         Alert.alert(
-                    //             'Kết thúc bài học',
-                    //             'Bạn có muốn kết thúc bài học để làm bài kiểm tra',
-                    //             [
-                    //                 { text: 'Cancel', onPress: () => console.log('Cancel Pressed'), style: 'cancel' },
-                    //                 { text: 'OK', onPress: () => console.log('OK Pressed') },
-                    //             ]
-                    //         )
-                    //     }, 7000)
-                    // }
+                    if (index == content.words.length - 1) {
+                        setTimeout(() => {
+                            Alert.alert(
+                                'Kết thúc bài học',
+                                'Bạn có muốn bước vào phần kiểm tra?',
+                                [
+                                    { 'text': 'Không', style: 'cancel' },
+                                    { 'text': 'Đồng Ý', onPress: () => this.props.navigation.navigate('QuizLesson', { lessonName, content }) }
+                                ]
+                            )
+                        }, 1000)
+                    }
                 }}
             >
                 {this.genItemOfLesson(content.words)}
-                
             </Swiper>
         );
     }
